@@ -17,3 +17,8 @@ export const getProducts = createSelector(
     getProductFeatureState,
     productState => productState.products
 )
+
+export const getError = createSelector(
+    getProductFeatureState,
+    productState => productState.error 
+)

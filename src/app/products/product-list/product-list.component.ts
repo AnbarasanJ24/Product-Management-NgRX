@@ -1,12 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
 
-import { Subscription } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 
 import { Product } from '../product';
 import { ProductService } from '../product.service';
 import { State } from '../state/product.reducer';
-import { getCurrentProduct, getShowProductCode } from '../state/product.selector';
+import { getCurrentProduct, getError, getProducts, getShowProductCode } from '../state/product.selector';
 import * as ProductActions from '../state/product.actions'
 
 
@@ -26,6 +26,10 @@ export class ProductListComponent implements OnInit {
   // Used to highlight the selected product in the list
   selectedProduct: Product | null;
   sub: Subscription;
+  products$: Observable<Product[]>;
+  selectedProduct$: Observable<Product>;
+  displayCode$: Observable<boolean>;
+  errorMessage$: Observable<string>;
 
   constructor(private productService: ProductService,
     private store : Store<State>) { }
@@ -34,18 +38,23 @@ export class ProductListComponent implements OnInit {
     // this.sub = this.productService.selectedProductChanges$.subscribe(
     //   currentProduct => this.selectedProduct = currentProduct
     // );
-    this.store.select(getCurrentProduct).subscribe(
-      currentProduct => this.selectedProduct = currentProduct
-    )
+    // this.store.select(getCurrentProduct).subscribe(
+    //   currentProduct => this.selectedProduct = currentProduct
+    // )
 
-    this.productService.getProducts().subscribe({
-      next: (products: Product[]) => this.products = products,
-      error: err => this.errorMessage = err
-    });
 
-    this.store.select(getShowProductCode).subscribe(
-      showProductCode => this.displayCode = showProductCode
-    )
+    // this.productService.getProducts().subscribe({
+    //   next: (products: Product[]) => this.products = products,
+    //   error: err => this.errorMessage = err
+    // });
+
+    this.displayCode$ = this.store.select(getShowProductCode)
+    this.products$ = this.store.select(getProducts);
+    this.store.dispatch(ProductActions.loadProducts());
+    this.selectedProduct$ = this.store.select(getCurrentProduct);
+    this.errorMessage$ = this.store.select(getError);
+
+    
   }
 
   checkChanged(): void {
