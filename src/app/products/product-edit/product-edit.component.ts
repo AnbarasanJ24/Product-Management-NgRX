@@ -29,9 +29,9 @@ export class ProductEditComponent implements OnInit {
   displayMessage: { [key: string]: string } = {};
   private validationMessages: { [key: string]: { [key: string]: string } };
   private genericValidator: GenericValidator;
-  products$: Observable<Product |null>;
+  products$: Observable<Product | null>;
 
-  constructor(private fb: FormBuilder, private productService: ProductService, private store : Store<State>) {
+  constructor(private fb: FormBuilder, private productService: ProductService, private store: Store<State>) {
 
     // Defines all of the validation messages for the form.
     // These could instead be retrieved from a file or database.
@@ -66,7 +66,7 @@ export class ProductEditComponent implements OnInit {
     // Watch for changes to the currently selected product
     //To Do
     this.products$ = this.store.select(getCurrentProduct).pipe(
-      tap( currentProduct => this.displayProduct(currentProduct))
+      tap(currentProduct => this.displayProduct(currentProduct))
     );
 
     // Watch for value changes for validation
@@ -136,14 +136,11 @@ export class ProductEditComponent implements OnInit {
 
         if (product.id === 0) {
           this.productService.createProduct(product).subscribe({
-            next: p => this.store.dispatch(ProductActions.setCurrentProduct({product})),
+            next: p => this.store.dispatch(ProductActions.setCurrentProduct({ currentProductId: p.id })),
             error: err => this.errorMessage = err
           });
         } else {
-          this.productService.updateProduct(product).subscribe({
-            next: p => this.store.dispatch(ProductActions.setCurrentProduct({product})),
-            error: err => this.errorMessage = err
-          });
+          this.store.dispatch(ProductActions.updateProduct({ product }))
         }
       }
     }

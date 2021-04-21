@@ -1,3 +1,4 @@
+import { createEffect } from "@ngrx/effects";
 import { createAction, props } from "@ngrx/store";
 import { Product } from "../product";
 
@@ -7,7 +8,7 @@ export const toggleProductCode = createAction(
 
 export const setCurrentProduct = createAction(
     '[Product] Set Current Product',
-    props<{ product: Product }>()
+    props<{ currentProductId: number }>()
 )
 
 export const clearCurrentProduct = createAction(
@@ -31,3 +32,20 @@ export const loadProductsFail = createAction(
     '[Product] Load Fail',
     props<{error:string}>()
 )
+
+
+export const updateProduct = createAction(
+    '[Product] Update Product',
+    props<{product:Product}>()
+)
+
+export const updateProductSuccess = createAction(
+    '[Product] Update Product Sucess',
+    props<{product : Product}>()
+)
+
+export const updateProductFail = createAction(
+    '[Product] Update Product Fail',
+    props<{error : string}>()
+)
+
