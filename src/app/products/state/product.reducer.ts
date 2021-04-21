@@ -2,7 +2,6 @@ import { createAction, createFeatureSelector, createReducer, createSelector, on 
 import { Product } from "../product";
 import * as AppState from '../../state/app.state';
 import * as ProductActions from './product.actions'
-import { stat } from "node:fs";
 
 
 export interface State extends AppState.State{
@@ -11,14 +10,14 @@ export interface State extends AppState.State{
 
 export interface ProductState{
     showProductCode: boolean,
-    currentProduct : Product,
+    currentProductId : number | null,
     products : Product[],
     error : string
 }
 
 const initialState : ProductState = {
     showProductCode: true,
-    currentProduct : null,
+    currentProductId : null,
     products : [],
     error : ''
 }
@@ -35,25 +34,20 @@ export const productReducer = createReducer(
     on(ProductActions.setCurrentProduct, (state,action)=>{
         return {
             ...state,
-            currentProduct : action.product
+            currentProductId : action.currentProductId
         }
     }),
     on(ProductActions.clearCurrentProduct, (state:ProductState):ProductState =>{
         return {
             ...state,
-            currentProduct : null
+            currentProductId : null
         }
     }),
     on(ProductActions.initilalizeCurrentProduct, (state):ProductState =>{
         return {
             ...state,
-            currentProduct :{
-                id :0,
-                productName :"",
-                productCode : "New",
-                description : '',
-                starRating :0 
-            }
+            currentProductId : 0
+           
         }
     }),
     on(ProductActions.loadProductSuccess, (state,action):ProductState=>{
@@ -68,5 +62,22 @@ export const productReducer = createReducer(
             ...state,
             error : action.error
         }        
+    }),
+    on(ProductActions.updateProductSuccess, (state,action)=>{
+        const updateProduct = state.products.map(
+            product => product.id === action.product.id ? action.product : product
+        )
+        return {
+            ...state,
+            products: updateProduct,
+            currentProductId : action.product.id,
+            error :''
+        }
+    }),
+    on(ProductActions.updateProductFail , (state,action)=>{
+        return {
+            ...state,
+            error : action.error
+        }
     })
 )
